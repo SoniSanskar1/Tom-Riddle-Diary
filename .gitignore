@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+.vercel
+.agents
+node_modules
+assets/fonts/harry-p.zip
+.tmp-server.js

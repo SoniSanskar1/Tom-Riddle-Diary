@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tom Riddle's Diary</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="ink-filters" aria-hidden="true">
+      <filter id="inkSoak" x="-20%" y="-25%" width="140%" height="150%">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.018 0.09"
+          numOctaves="2"
+          seed="17"
+          result="paperFibers"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="paperFibers"
+          scale="2.4"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
+    <main class="scene">
+      <div class="table-shadow"></div>
+      <section class="diary" aria-label="Tom Riddle's diary">
+        <div class="cover-edge"></div>
+        <div class="page-stack"></div>
+        <article class="diary-page">
+          <div class="binding-shadow"></div>
+          <div class="paper-light"></div>
+          <div class="paper-grain"></div>
+
+          <div class="writing-surface" id="canvasFrame">
+            <div id="storyText" class="story-text" aria-live="polite"></div>
+            <canvas
+              id="handwritingCanvas"
+              width="1200"
+              height="780"
+              aria-label="Write in the diary"
+            ></canvas>
+            <img id="fadeSnapshot" class="fade-snapshot" alt="" />
+          </div>
+
+          <p id="statusText" class="status-text">The diary is listening.</p>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
