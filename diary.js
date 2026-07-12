@@ -13,7 +13,10 @@ const statusText = document.getElementById("statusText");
 const fadeSnapshot = document.getElementById("fadeSnapshot");
 const canvasFrame = document.getElementById("canvasFrame");
 const pageStorm = document.getElementById("pageStorm");
-const memoryScene = document.getElementById("memoryScene");
+const memoryDate = document.getElementById("memoryDate");
+const spineFlash = document.getElementById("spineFlash");
+const screenFlash = document.getElementById("screenFlash");
+const diary = document.querySelector(".diary");
 
 const state = {
   autoSendTimer: null,
@@ -370,17 +373,48 @@ async function playReplySequence(replies) {
   }
 }
 
+function buildTurningPages() {
+  if (pageStorm.childElementCount === 50) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  for (let index = 0; index < 50; index += 1) {
+    const page = document.createElement("i");
+    page.style.setProperty("--page-index", index);
+    fragment.appendChild(page);
+  }
+  pageStorm.replaceChildren(fragment);
+}
+
 async function playDiaryMemory() {
   setStatus("The diary is opening a memory...");
+  buildTurningPages();
   pageStorm.classList.remove("active");
-  memoryScene.classList.remove("active");
+  memoryDate.classList.remove("visible");
+  spineFlash.classList.remove("active");
+  screenFlash.classList.remove("active");
+  diary.classList.remove("focus-date");
   void pageStorm.offsetWidth;
   pageStorm.classList.add("active");
-  await new Promise((resolve) => window.setTimeout(resolve, 900));
-  memoryScene.classList.add("active");
-  await new Promise((resolve) => window.setTimeout(resolve, 7000));
+  await new Promise((resolve) => window.setTimeout(resolve, 2750));
   pageStorm.classList.remove("active");
-  memoryScene.classList.remove("active");
+
+  memoryDate.classList.add("visible");
+  await new Promise((resolve) => window.setTimeout(resolve, 1200));
+  diary.classList.add("focus-date");
+  await new Promise((resolve) => window.setTimeout(resolve, 2700));
+  diary.classList.remove("focus-date");
+  await new Promise((resolve) => window.setTimeout(resolve, 2100));
+
+  spineFlash.classList.add("active");
+  await new Promise((resolve) => window.setTimeout(resolve, 950));
+  screenFlash.classList.add("active");
+  await new Promise((resolve) => window.setTimeout(resolve, 4500));
+
+  spineFlash.classList.remove("active");
+  screenFlash.classList.remove("active");
+  memoryDate.classList.remove("visible");
 }
 
 async function playIntroSequence(name) {
