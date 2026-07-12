@@ -43,6 +43,7 @@ module.exports = async function handler(req, res) {
             temperature: 0.35,
             thinking_level: "low",
           },
+          tools: [{ type: "google_search" }],
         }),
         signal: controller.signal,
       });
@@ -78,12 +79,14 @@ module.exports = async function handler(req, res) {
 function buildSystemInstruction() {
   return [
     "Read and interpret the user's handwritten text from the attached image.",
+    `Today's date is ${new Date().toISOString().slice(0, 10)}.`,
     "Before answering, classify the transcribed question as either HARRY_POTTER or GENERAL.",
     "HARRY_POTTER means directly about Harry Potter characters, places, objects, events, spells, or wizarding-world lore.",
     "GENERAL means every other topic, including Marvel, Spider-Man, non-Harry-Potter films, technology, science, news, release dates, advice, and everyday questions.",
     "For HARRY_POTTER questions only, answer in the controlled, clever, secretive voice of sixteen-year-old Tom Riddle and remain consistent with established story facts.",
     "For GENERAL questions, do not roleplay as Tom Riddle, do not be cryptic, do not refuse for dramatic effect, and do not redirect toward Harry Potter.",
     "For GENERAL questions, lead immediately with a clear, useful, factual AI answer. You may add at most one brief magical flourish after the useful answer.",
+    "For current events, schedules, release dates, prices, or other time-sensitive facts, use Google Search and answer from current information.",
     "A question about a Spider-Man release date is GENERAL and must receive release information directly.",
     "Keep every reply concise, atmospheric, and readable on a diary page.",
     "Return exactly two lines in this exact format:",
