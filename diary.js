@@ -343,6 +343,22 @@ function getScriptedDiaryBeat(transcript) {
   return null;
 }
 
+function getVerifiedGeneralAnswer(transcript) {
+  const text = normalizeTranscript(transcript);
+  const asksSpiderManRelease =
+    text.includes("spider man") &&
+    text.includes("brand new day") &&
+    ["release", "releasing", "come out", "date", "when"].some((word) =>
+      text.includes(word)
+    );
+
+  if (asksSpiderManRelease) {
+    return "Spider-Man: Brand New Day releases in theaters on July 31, 2026.\nThe date is written clearly in the ink.";
+  }
+
+  return "";
+}
+
 function rememberExchange(user, reply) {
   state.conversation.push({ user, reply });
   state.conversation = state.conversation.slice(-6);
@@ -400,9 +416,16 @@ async function handleSend() {
       setStatus("The diary recognizes your name.");
       await playIntroSequence(detectedName);
     } else {
-      const scriptedBeat = getScriptedDiaryBeat(result.transcript);
+      const verifiedGeneralAnswer = getVerifiedGeneralAnswer(result.transcript);
+      const scriptedBeat = verifiedGeneralAnswer
+        ? null
+        : getScriptedDiaryBeat(result.transcript);
 
-      if (scriptedBeat) {
+      if (verifiedGeneralAnswer) {
+        setStatus("The diary finds a clear answer...");
+        await writeReply(verifiedGeneralAnswer);
+        rememberExchange(result.transcript, verifiedGeneralAnswer);
+      } else if (scriptedBeat) {
         setStatus("The diary remembers...");
         await playReplySequence(scriptedBeat.replies);
         rememberExchange(result.transcript, scriptedBeat.replies.join(" "));

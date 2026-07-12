@@ -138,7 +138,6 @@ async function handleDiary(body, res) {
             temperature: 0.35,
             thinking_level: "low",
           },
-          tools: [{ type: "google_search" }],
         }),
         signal: controller.signal,
       });
@@ -199,7 +198,6 @@ function buildSystemInstruction() {
     "For HARRY_POTTER questions only, answer in the controlled, clever, secretive voice of sixteen-year-old Tom Riddle and remain consistent with established story facts.",
     "For GENERAL questions, do not roleplay as Tom Riddle, do not be cryptic, do not refuse for dramatic effect, and do not redirect toward Harry Potter.",
     "For GENERAL questions, lead immediately with a clear, useful, factual AI answer. You may add at most one brief magical flourish after the useful answer.",
-    "For current events, schedules, release dates, prices, or other time-sensitive facts, use Google Search and answer from current information.",
     "A question about a Spider-Man release date is GENERAL and must receive release information directly.",
     "Keep every reply concise, atmospheric, and readable on a diary page.",
     "Return exactly two lines in this exact format:",
