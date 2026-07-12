@@ -29,9 +29,13 @@
       <div class="table-shadow"></div>
       <section class="diary" aria-label="Tom Riddle's diary">
         <div class="cover-edge"></div>
-        <div class="page-stack"></div>
-        <article class="diary-page">
-          <div class="binding-shadow"></div>
+        <div class="page-stack page-stack-left"></div>
+        <div class="page-stack page-stack-right"></div>
+
+        <article class="book-spread">
+          <div class="book-page book-page-left"></div>
+          <div class="book-page book-page-right"></div>
+          <div class="center-gutter"></div>
           <div class="paper-light"></div>
           <div class="paper-grain"></div>
 
@@ -44,6 +48,22 @@
               aria-label="Write in the diary"
             ></canvas>
             <img id="fadeSnapshot" class="fade-snapshot" alt="" />
+          </div>
+
+          <div id="pageStorm" class="page-storm" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+
+          <div id="memoryScene" class="memory-scene" aria-hidden="true">
+            <div class="memory-flash"></div>
+            <div class="memory-vignette"></div>
+            <div class="memory-corridor">
+              <span class="arch arch-one"></span>
+              <span class="arch arch-two"></span>
+              <span class="memory-figure figure-riddle"></span>
+              <span class="memory-figure figure-headmaster"></span>
+            </div>
+            <p class="memory-caption">Hogwarts · Fifty years ago</p>
           </div>
 
           <p id="statusText" class="status-text">The diary is listening.</p>

@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           model,
           system_instruction: buildSystemInstruction(),
-          input: buildInteractionInput(body.imageBase64, body.userName),
+          input: buildInteractionInput(body.imageBase64, body.userName, body.conversation),
           generation_config: {
             temperature: 0.65,
             thinking_level: "low",
@@ -79,7 +79,9 @@ function buildSystemInstruction() {
   return [
     "You are Tom Riddle's enchanted diary.",
     "Read and interpret the user's handwritten text from the attached image.",
-    "Keep replies concise, atmospheric, and readable.",
+    "When the user asks about Harry Potter, Hogwarts, the Chamber of Secrets, Slytherin, Voldemort, or related wizarding lore, answer in the controlled, clever, secretive voice of sixteen-year-old Tom Riddle and remain consistent with established story facts.",
+    "For unrelated everyday or factual questions, answer normally and accurately without forcing Harry Potter references.",
+    "Keep every reply concise, atmospheric, and readable on a diary page.",
     "Return exactly two lines in this exact format:",
     "TRANSCRIPT: <the transcribed handwriting>",
     "REPLY: <the diary response>",
@@ -87,9 +89,16 @@ function buildSystemInstruction() {
   ].join(" ");
 }
 
-function buildInteractionInput(imageBase64, userName) {
+function buildInteractionInput(imageBase64, userName, conversation) {
+  const history = Array.isArray(conversation)
+    ? conversation
+        .slice(-6)
+        .map((entry) => `Writer: ${entry.user}\nDiary: ${entry.reply}`)
+        .join("\n\n")
+    : "";
   const prompt = [
     typeof userName === "string" && userName ? `The user's name is ${userName}.` : "",
+    history ? `Recent conversation:\n${history}` : "",
     "Read the handwriting in this image and respond to its meaning.",
   ]
     .filter(Boolean)
@@ -128,4 +137,3 @@ function parseGeminiOutput(text) {
     reply: replyMatch ? replyMatch[1].trim() : text,
   };
 }
-

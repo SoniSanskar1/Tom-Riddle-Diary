@@ -12,7 +12,9 @@ An interactive enchanted diary inspired by the visual language of the diary scen
 - Cinematic parchment, paper fibers, page depth, candlelight, and binding shadows
 - Ink emergence and paper-absorption animations
 - Response reading time calculated from rendered line count
-- No visible controls, page changes, or stored conversation history
+- Scripted Chamber of Secrets dialogue with paraphrase recognition
+- Rapid page-turn storm, central flash, and an original diary-memory sequence
+- Session-only conversational context with no database or permanent storage
 - Responsive layout for desktop and mobile
 
 ## Tech Stack
@@ -74,7 +76,7 @@ npx vercel --prod
 
 - The Gemini API key is read only by the server or Vercel Function and is never exposed to browser JavaScript.
 - `.env` files and Vercel project metadata are excluded from Git.
-- Questions and responses are not persisted by the application.
+- Questions and responses are kept only in short-lived browser memory for follow-up context and are never persisted by the application.
 - The browser sends only the cropped handwriting image required for the current response.
 
 ## Fonts and Visual Assets
@@ -87,4 +89,3 @@ npx vercel --prod
 ## Disclaimer
 
 This is a fan-made technical and visual experiment. It is not affiliated with or endorsed by Warner Bros., J.K. Rowling, or the official Harry Potter franchise. All referenced trademarks belong to their respective owners.
-

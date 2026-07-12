@@ -12,10 +12,14 @@ const storyText = document.getElementById("storyText");
 const statusText = document.getElementById("statusText");
 const fadeSnapshot = document.getElementById("fadeSnapshot");
 const canvasFrame = document.getElementById("canvasFrame");
+const pageStorm = document.getElementById("pageStorm");
+const memoryScene = document.getElementById("memoryScene");
 
 const state = {
   autoSendTimer: null,
   busy: false,
+  chamberStage: 0,
+  conversation: [],
   drawing: false,
   hasApiKey: false,
   hasInk: false,
@@ -270,7 +274,7 @@ async function queryDiary(imageBase64) {
     },
     body: JSON.stringify({
       imageBase64,
-      conversation: [],
+      conversation: state.conversation.slice(-6),
       userName: state.userName,
     }),
   });
@@ -294,6 +298,73 @@ function formatName(name) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
     .join(" ");
+}
+
+function normalizeTranscript(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getScriptedDiaryBeat(transcript) {
+  const text = normalizeTranscript(transcript);
+  const asksAboutChamber =
+    text.includes("chamber of secrets") ||
+    text.includes("secret chamber") ||
+    (text.includes("chamber") && text.includes("secret"));
+  const asksToContinue = [
+    "tell me",
+    "show me",
+    "can you tell",
+    "what happened",
+    "what do you know",
+    "please explain",
+  ].some((phrase) => text.includes(phrase));
+
+  if (asksAboutChamber && state.chamberStage === 0) {
+    state.chamberStage = 1;
+    return { replies: ["Yes."], opensMemory: false };
+  }
+
+  if (state.chamberStage === 1 && (asksToContinue || text.length < 30)) {
+    state.chamberStage = 2;
+    return {
+      replies: [
+        "No.",
+        "But I can show you.",
+        "Let me take you back... fifty years ago.",
+      ],
+      opensMemory: true,
+    };
+  }
+
+  return null;
+}
+
+function rememberExchange(user, reply) {
+  state.conversation.push({ user, reply });
+  state.conversation = state.conversation.slice(-6);
+}
+
+async function playReplySequence(replies) {
+  for (const reply of replies) {
+    await writeReply(reply, true);
+  }
+}
+
+async function playDiaryMemory() {
+  setStatus("The diary is opening a memory...");
+  pageStorm.classList.remove("active");
+  memoryScene.classList.remove("active");
+  void pageStorm.offsetWidth;
+  pageStorm.classList.add("active");
+  await new Promise((resolve) => window.setTimeout(resolve, 900));
+  memoryScene.classList.add("active");
+  await new Promise((resolve) => window.setTimeout(resolve, 7000));
+  pageStorm.classList.remove("active");
+  memoryScene.classList.remove("active");
 }
 
 async function playIntroSequence(name) {
@@ -329,11 +400,23 @@ async function handleSend() {
       setStatus("The diary recognizes your name.");
       await playIntroSequence(detectedName);
     } else {
-      setStatus(`The diary replies with ${result.model}...`);
-      await writeReply(result.reply);
+      const scriptedBeat = getScriptedDiaryBeat(result.transcript);
+
+      if (scriptedBeat) {
+        setStatus("The diary remembers...");
+        await playReplySequence(scriptedBeat.replies);
+        rememberExchange(result.transcript, scriptedBeat.replies.join(" "));
+        if (scriptedBeat.opensMemory) {
+          await playDiaryMemory();
+        }
+      } else {
+        setStatus(`The diary replies with ${result.model}...`);
+        await writeReply(result.reply);
+        rememberExchange(result.transcript, result.reply);
+      }
     }
 
-    setStatus("Write on the current page or turn back through older ones.");
+    setStatus("The diary is listening.");
   } catch (error) {
     showStoryText("The page shudders, but no answer comes.", "visible centered fade-enter");
     setStatus(error.message);
